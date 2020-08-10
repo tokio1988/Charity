@@ -1,0 +1,257 @@
+﻿
+@model Charity.Mvc.ViewModels.DonationViewModel
+
+<section class="form--steps">
+    <div class="form--steps-instructions">
+        <div class="form--steps-container">
+            <h3>Ważne!</h3>
+            <p data-step="1" class="active">
+                Uzupełnij szczegóły dotyczące Twoich rzeczy. Dzięki temu będziemy
+                wiedzieć komu najlepiej je przekazać.
+            </p>
+            <p data-step="2">
+                Uzupełnij szczegóły dotyczące Twoich rzeczy. Dzięki temu będziemy
+                wiedzieć komu najlepiej je przekazać.
+            </p>
+            <p data-step="3">
+                Wybierz jedną, do
+                której trafi Twoja przesyłka.
+            </p>
+            <p data-step="4">Podaj adres oraz termin odbioru rzeczy.</p>
+        </div>
+    </div>
+    <div class="form--steps-container">
+        <div class="form--steps-counter">Krok <span>1</span>/4</div>
+        <form asp-controller="Donation" asp-action="Donate" method="post">
+            <!-- STEP 1: class .active is switching steps -->
+            <div data-step="1" class="active">
+                <h3>Zaznacz co chcesz oddać:</h3>
+
+                @for (var i = 0; i < Model.Categories.Count; i++)
+                {
+                    <div class="form-group form-group--checkbox">
+                        <label>
+                            <input type="checkbox" asp-for="@Model.Categories[i].IsChecked"/>
+
+                            <span class="checkbox" value="@Model.Categories[i].Name"></span>
+                            <span class="description">@Model.Categories[i].Name</span>
+
+                            <input type="hidden" asp-for="@Model.Categories[i].Id" />
+                            <input type="hidden" asp-for="@Model.Categories[i].Name" />
+                            <input type="hidden" name="DonationCategoryName" value="@Model.Categories[i].IsChecked" />
+                        </label>
+                    </div>
+                }
+
+                <div class="form-group form-group--buttons">
+                    <button type="button" class="btn next-step">Dalej</button>
+                </div>
+            </div>
+            <!-- STEP 2 -->
+            <div data-step="2">
+                <h3>Podaj liczbę 60l worków, w które spakowałeś/aś rzeczy:</h3>
+                <div class="form-group form-group--inline">
+                    <label>
+                        Liczba 60l worków:
+                        <input id="_DonationQt" asp-for="DonationQuantity" type="number" value="@Model.DonationQuantity" name="DonationQuantity" step="1" min="1" />
+                    </label>
+                </div>
+                <div class="form-group form-group--buttons">
+                    <button type="button" class="btn prev-step">Wstecz</button>
+                    <button type="button" class="btn next-step">Dalej</button>
+                </div>
+            </div>
+
+            <!-- STEP 4 -->
+            <div data-step="3">
+                <h3>Wybierz organizacje, której chcesz pomóc:</h3>
+
+                @*<select asp-for="DonationInstitution.Name" asp-items="@Model.Instytucje" name="DonationInstitution"></select>*@
+
+
+                @for (var i = 0; i < @Model.Institutions.Count(); i++)
+                {
+                    <div class="form-group form-group--checkbox">
+                        <label>
+                            <input asp-for="DonationInstitutionName" type="radio"
+                                   name="DonationInstitutionName" value="@Model.Institutions[i].Name" />
+                            <span class="checkbox"></span>
+                            <span class="description">@Model.Institutions[i].Name</span>
+                        </label>
+                    </div>
+                }
+
+                <div class="form-group form-group--buttons">
+                    <button type="button" class="btn prev-step">Wstecz</button>
+                    <button type="button" class="btn next-step">Dalej</button>
+                </div>
+            </div>
+            <!-- STEP 5 -->
+            <div data-step="4">
+                <h3>Podaj adres oraz termin odbioru rzecz przez kuriera:</h3>
+                <div class="form-section form-section--columns">
+                    <div class="form-section--column">
+                        <h4>Adres odbioru</h4>
+                        <div class="form-group form-group--inline">
+                            <label> Ulica <input id="_DonationStreet" asp-for="DonationStreet" type="text" name="DonationStreet" /> </label>
+                        </div>
+                        <div class="form-group form-group--inline">
+                            <label> Miasto <input id="_DonationCity" asp-for="DonationCity" type="text" name="DonationCity" /> </label>
+                        </div>
+                        <div class="form-group form-group--inline">
+                            <label>
+                                Kod pocztowy <input id="_DonationZipCode" asp-for="DonationZipCode" type="text" name="DonationZipCode" />
+                            </label>
+                        </div>
+                        <div class="form-group form-group--inline">
+                            <label>
+                                Numer telefonu <input id="_PhoneNumber" asp-for="DonationContactPhoneNumber" type="text" name="DonationContactPhoneNumber" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-section--column">
+                        <h4>Termin odbioru</h4>
+                        <div class="form-group form-group--inline">
+                            <label> Data <input id="_DonationPickUpDate" asp-for="DonationPickUpDate" type="date" name="DonationPickUpDate" value="@DateTime.Now.ToShortDateString()" /> </label>
+                        </div>
+                        <div class="form-group form-group--inline">
+                            <label> Godzina <input id="_DonationPickUpTime" asp-for="DonationPickUpTime" type="datetime-local" name="DonationPickUpTime" value="@DateTime.Now.ToShortTimeString()" /> </label>
+                        </div>
+                        <div class="form-group form-group--inline">
+                            <label>
+                                Uwagi dla kuriera
+                                <textarea id="_DonationPickUpComment" asp-for="DonationPickUpComment" name="DonationPickUpComment" rows="5"></textarea>
+
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group form-group--buttons">
+                    <button type="button" class="btn prev-step">Wstecz</button>
+                    <button id="summaryButton" type="button" class="btn next-step">Dalej</button>
+                </div>
+            </div>
+            <!-- STEP 6 -->
+            <div data-step="5">
+                <h3>Podsumowanie Twojej darowizny</h3>
+                <div class="summary">
+                    <div class="form-section">
+                        <h4>Oddajesz:</h4>
+                        <ul>
+                            <li>
+                                <span class="icon icon-bag"></span>
+                                <span id="_Quantity" class="summary--text"></span>
+                            </li>
+
+                            @*@foreach (var item in Model.ChkItem)
+                                {
+                                    <li id="IfChecked@(item.Id)" style="visibility:hidden">
+                                        @item.Name
+                                    </li>
+                                }*@
+
+                            <li>
+                                <span class="icon icon-hand"></span>
+                                <span id="_Instytution" class="summary--text"></span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="form-section form-section--columns">
+                        <div class="form-section--column">
+                            <h4>Adres odbioru:</h4>
+                            <ul>
+                                <li id="Li_Street"></li>
+                                <li id="Li_City"></li>
+                                <li id="Li_ZipCode"></li>
+                                <li id="Li_Phone"></li>
+                            </ul>
+                        </div>
+                        <div class="form-section--column">
+                            <h4>Termin odbioru:</h4>
+                            <ul>
+                                <li id="Li_Date"></li>
+                                <li id="Li_Time"></li>
+                                <li id="Li_Comment"></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group form-group--buttons">
+                    <button type="button" class="btn prev-step">Wstecz</button>
+                    <button type="submit" class="btn">Potwierdzam</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+@*<script src="js/app.js"></script>*@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var summary = document.getElementById("summaryButton");
+
+        var _date = document.getElementById("_DonationPickUpDate");
+        var _time = document.getElementById("_DonationPickUpTime");
+        var _com = document.getElementById("_DonationPickUpComment");
+        var date = document.getElementById("Li_Date");
+        var time = document.getElementById("Li_Time");
+        var com = document.getElementById("Li_Comment");
+
+        var _street = document.getElementById("_DonationStreet");
+        var street = document.getElementById("Li_Street");
+        var _city = document.getElementById("_DonationCity");
+        var city = document.getElementById("Li_City");
+        var _zipCode = document.getElementById("_DonationZipCode");
+        var zipCode = document.getElementById("Li_ZipCode");
+        var _phone = document.getElementById("_PhoneNumber");
+        var phone = document.getElementById("Li_Phone");
+
+        var _donationQuantity = document.getElementById("_DonationQt");
+        var Quantity = document.getElementById("_Quantity");
+
+        var AllCheckBoxes = document.querySelectorAll('input[type=checkbox]');
+        var AllCheckSpans = document.querySelectorAll('span[class=description]');
+
+        summary.addEventListener("click", function (e) {
+            date.innerText = _date.value;
+            time.innerText = _time.value;
+            com.innerText = _com.value;
+
+            street.innerText = _street.value;
+            city.innerText = _city.value;
+            zipCode.innerText = _zipCode.value;
+            phone.innerText = _phone.value;
+
+            Quantity.innerText = "Liczba worków: " + _donationQuantity.value;
+
+            var CategoryResoult = "";
+            for (i = 0; i < AllCheckBoxes.length; i++) {
+                if (AllCheckBoxes[i].checked == true) {
+                    //var NameVal = AllCheckBoxes[i].nextSibling;
+                    CategoryResoult += ' \r\n -' + AllCheckSpans[i].innerText;
+                }
+            }
+
+            Quantity.innerText += CategoryResoult;
+        })
+
+        var _Instytution = document.getElementById("_Instytution");
+        var radios = document.querySelectorAll('input[type=radio][name="DonationInstitutionName"]');
+
+        function changeHandler(event) {
+            _Instytution.innerText = "Dla fundacji: " + this.value;
+        }
+
+        Array.prototype.forEach.call(radios, function (radio) {
+            radio.addEventListener('click', changeHandler);
+        })
+
+        
+    })
+</script>
+
+
+<li id="Li_Street"></li>
+<li id="Li_City"></li>
+<li id="Li_ZipCode"></li>
+<li id="Li_Phone"></li>
